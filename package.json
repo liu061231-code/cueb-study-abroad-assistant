@@ -1,0 +1,35 @@
+{
+  "name": "cueb-study-abroad-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.5.2",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -p tsconfig.json --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "typescript": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "lucide-react": "latest"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.18",
+    "postcss": "latest",
+    "autoprefixer": "latest",
+    "vitest": "latest",
+    "@types/node": "latest",
+    "@testing-library/react": "latest",
+    "@testing-library/jest-dom": "latest",
+    "jsdom": "latest",
+    "playwright": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest"
+  }
+}
