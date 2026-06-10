@@ -1,4 +1,5 @@
-import { ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
+import { Wand2 } from "lucide-react";
 import type { ApplicantProfile, Direction, Region } from "../types/application";
 
 const regions: Region[] = ["英国", "香港", "新加坡", "澳大利亚", "美国", "多国混申"];
@@ -21,100 +22,85 @@ export function ProfileForm({ profile, onChange, onAnalyze }: ProfileFormProps) 
       update(field, event.target.value);
 
   return (
-    <section className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-soft sm:p-7">
-      <div className="mb-6">
-        <h2 className="text-2xl font-black text-cueb-navy">背景信息录入</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
-          填得越具体，规则系统越能对齐首经贸案例库中的相似背景。
-        </p>
+    <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-soft">
+      <div className="mb-5">
+        <p className="text-xs font-black uppercase tracking-wide text-cueb-red">Step 1</p>
+        <h2 className="mt-1 text-2xl font-black text-cueb-navy">填写学业背景</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-500">只填核心信息，系统会直接生成可去学校。</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="space-y-2">
-          <span className="text-sm font-bold text-slate-700">本科专业</span>
-          <input
-            className="field"
-            value={profile.major}
-            onChange={handleText("major")}
-            placeholder="如：会计学 / 金融学 / 经济学"
-          />
+      <div className="space-y-3">
+        <label className="block">
+          <span className="form-label">本科专业</span>
+          <input className="field" value={profile.major} onChange={handleText("major")} placeholder="会计学" />
         </label>
-        <label className="space-y-2">
-          <span className="text-sm font-bold text-slate-700">GPA</span>
-          <input
-            className="field"
-            type="number"
-            min="0"
-            max="4"
-            step="0.01"
-            value={profile.gpa}
-            onChange={(event) => update("gpa", Number(event.target.value))}
-          />
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block">
+            <span className="form-label">GPA</span>
+            <input
+              className="field"
+              type="number"
+              min="0"
+              max="4"
+              step="0.01"
+              value={profile.gpa}
+              onChange={(event) => update("gpa", Number(event.target.value))}
+            />
+          </label>
+          <label className="block">
+            <span className="form-label">预算</span>
+            <input className="field" value={profile.budget} onChange={handleText("budget")} placeholder="50-80万" />
+          </label>
+        </div>
+        <label className="block">
+          <span className="form-label">语言成绩</span>
+          <input className="field" value={profile.languageScore} onChange={handleText("languageScore")} placeholder="雅思7.0" />
         </label>
-        <label className="space-y-2">
-          <span className="text-sm font-bold text-slate-700">语言成绩</span>
-          <input
-            className="field"
-            value={profile.languageScore}
-            onChange={handleText("languageScore")}
-            placeholder="如：雅思7.0 / 托福100 / 暂无"
-          />
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-bold text-slate-700">预算</span>
-          <input
-            className="field"
-            value={profile.budget}
-            onChange={handleText("budget")}
-            placeholder="如：50-80万"
-          />
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-bold text-slate-700">目标地区</span>
-          <select
-            className="field"
-            value={profile.targetRegion}
-            onChange={handleText("targetRegion")}
-          >
-            {regions.map((item) => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-bold text-slate-700">目标方向</span>
-          <select className="field" value={profile.direction} onChange={handleText("direction")}>
-            {directions.map((item) => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
-        </label>
-        <label className="space-y-2 md:col-span-2">
-          <span className="text-sm font-bold text-slate-700">实习经历</span>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block">
+            <span className="form-label">目标地区</span>
+            <select className="field" value={profile.targetRegion} onChange={handleText("targetRegion")}>
+              {regions.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="form-label">目标方向</span>
+            <select className="field" value={profile.direction} onChange={handleText("direction")}>
+              {directions.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <label className="block">
+          <span className="form-label">实习经历</span>
           <textarea
-            className="field min-h-24 resize-y"
+            className="field min-h-20 resize-y"
             value={profile.internships}
             onChange={handleText("internships")}
-            placeholder="如：四大审计、券商行研、银行、咨询、互联网数据分析等"
+            placeholder="四大、券商、银行、咨询、数据分析等"
           />
         </label>
-        <label className="space-y-2 md:col-span-2">
-          <span className="text-sm font-bold text-slate-700">科研/竞赛经历</span>
+        <label className="block">
+          <span className="form-label">科研 / 竞赛</span>
           <textarea
-            className="field min-h-24 resize-y"
+            className="field min-h-20 resize-y"
             value={profile.research}
             onChange={handleText("research")}
-            placeholder="如：大创、数学建模、课程论文、Python/SQL 项目、作品集"
+            placeholder="大创、商赛、课程论文、Python/SQL 项目"
           />
         </label>
       </div>
 
       <button
-        className="mt-6 w-full rounded-2xl bg-cueb-navy px-5 py-3.5 text-base font-black text-white transition hover:bg-cueb-red"
+        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cueb-red px-5 py-3.5 font-black text-white shadow-lg shadow-red-950/10 transition hover:bg-red-700"
         type="button"
         onClick={onAnalyze}
       >
-        生成选校分析报告
+        <Wand2 className="h-5 w-5" />
+        生成可去学校
       </button>
     </section>
   );
