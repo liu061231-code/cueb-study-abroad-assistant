@@ -4,7 +4,13 @@ export type Region =
   | "新加坡"
   | "澳大利亚"
   | "美国"
-  | "多国混申";
+  | "日本"
+  | "韩国"
+  | "加拿大"
+  | "法国"
+  | "德国"
+  | "荷兰"
+  | "瑞士";
 
 export type Direction =
   | "金融"
@@ -18,7 +24,7 @@ export interface ApplicantProfile {
   major: string;
   gpa: number;
   languageScore: string;
-  targetRegion: Region;
+  targetRegions: Region[];
   budget: string;
   internships: string;
   research: string;
@@ -32,7 +38,7 @@ export interface OfferCase {
   gpa: number;
   gpaDisplay?: string;
   language: string;
-  region: Exclude<Region, "多国混申">;
+  region: Region;
   direction: Direction;
   school: string;
   program: string;

@@ -5,10 +5,10 @@ import {
   cuebMajors,
   internshipOptions,
   languageExamOptions,
-  regions,
+  regionOptions,
   targetDirections
 } from "../data/formOptions";
-import type { ApplicantProfile } from "../types/application";
+import type { ApplicantProfile, Region } from "../types/application";
 
 interface ProfileFormProps {
   profile: ApplicantProfile;
@@ -24,6 +24,14 @@ export function ProfileForm({ profile, onChange, onAnalyze }: ProfileFormProps) 
 
   const update = (field: keyof ApplicantProfile, value: string | number) => {
     onChange({ ...profile, [field]: value });
+  };
+
+  const toggleRegion = (region: Region) => {
+    const exists = profile.targetRegions.includes(region);
+    const nextRegions = exists
+      ? profile.targetRegions.filter((item) => item !== region)
+      : [...profile.targetRegions, region];
+    onChange({ ...profile, targetRegions: nextRegions.length > 0 ? nextRegions : [region] });
   };
 
   const updateLanguage = (exam: string, score: string) => {
@@ -101,15 +109,28 @@ export function ProfileForm({ profile, onChange, onAnalyze }: ProfileFormProps) 
             </select>
           </label>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="block">
-            <span className="form-label">目标地区</span>
-            <select className="field" value={profile.targetRegion} onChange={handleText("targetRegion")}>
-              {regions.map((item) => (
-                <option key={item}>{item}</option>
-              ))}
-            </select>
-          </label>
+        <div className="grid gap-3">
+          <div>
+            <span className="form-label">目标国家 / 地区</span>
+            <div className="grid grid-cols-2 gap-2">
+              {regionOptions.map((item) => {
+                const selected = profile.targetRegions.includes(item.region);
+                return (
+                  <button
+                    key={item.region}
+                    className={`region-pill ${selected ? "region-pill-selected" : ""}`}
+                    type="button"
+                    onClick={() => toggleRegion(item.region)}
+                    aria-pressed={selected}
+                  >
+                    <span className="text-base">{item.flag}</span>
+                    <span>{item.region}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-1 text-xs leading-5 text-slate-400">可多选，想申请哪个国家/地区就点哪个。</p>
+          </div>
           <label className="block">
             <span className="form-label">目标专业</span>
             <select className="field" value={profile.direction} onChange={handleText("direction")}>

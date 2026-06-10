@@ -12,7 +12,7 @@ const initialProfile: ApplicantProfile = {
   major: "会计学",
   gpa: 3.5,
   languageScore: "雅思7.0",
-  targetRegion: "英国",
+  targetRegions: ["英国"],
   budget: "50-80万",
   internships: "四大/会计师事务所实习",
   research: "课程论文、商赛经历",
@@ -40,7 +40,7 @@ export default function App() {
 
       {!showIntro ? (
         <main className="min-h-screen">
-          <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+          <header className="border-b border-slate-200 bg-white">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
               <div>
                 <h1 className="text-lg font-black text-cueb-navy sm:text-xl">首经贸留学助手</h1>

@@ -88,7 +88,20 @@ export const languageExamOptions = [
   }
 ];
 
-export const regions: Region[] = ["英国", "香港", "新加坡", "澳大利亚", "美国", "多国混申"];
+export const regionOptions: Array<{ region: Region; flag: string }> = [
+  { region: "英国", flag: "🇬🇧" },
+  { region: "香港", flag: "🇭🇰" },
+  { region: "新加坡", flag: "🇸🇬" },
+  { region: "澳大利亚", flag: "🇦🇺" },
+  { region: "美国", flag: "🇺🇸" },
+  { region: "日本", flag: "🇯🇵" },
+  { region: "韩国", flag: "🇰🇷" },
+  { region: "加拿大", flag: "🇨🇦" },
+  { region: "法国", flag: "🇫🇷" },
+  { region: "德国", flag: "🇩🇪" },
+  { region: "荷兰", flag: "🇳🇱" },
+  { region: "瑞士", flag: "🇨🇭" }
+];
 
 export const targetDirections: Direction[] = ["金融", "会计", "商业分析", "管理", "经济", "数据科学"];
 

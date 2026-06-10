@@ -7,7 +7,7 @@ const strongProfile: ApplicantProfile = {
   major: "会计学",
   gpa: 3.65,
   languageScore: "雅思7.0",
-  targetRegion: "英国",
+  targetRegions: ["英国"],
   budget: "50-80万",
   internships: "四大审计实习、券商行研实习",
   research: "大创项目、数学建模竞赛",
@@ -52,8 +52,8 @@ describe("analyzeApplicant", () => {
       offerCases
     );
 
-    expect(result.missingMaterials).toContain("补充雅思/托福/GRE/GMAT等标化成绩截图或考试计划");
-    expect(result.missingMaterials).toContain("补充与目标方向相关的实习经历和职责成果");
+    expect(result.missingMaterials).toContain("补充雅思/托福/多邻国/PTE等标化成绩截图或考试计划");
+    expect(result.missingMaterials).toContain("补充与目标专业相关的实习经历和职责成果");
     expect(result.missingMaterials).toContain("补充科研、竞赛、课程项目或数据分析作品");
   });
 }

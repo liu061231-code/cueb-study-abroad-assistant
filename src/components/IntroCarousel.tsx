@@ -35,7 +35,7 @@ function DemoPanel({ step }: { step: number }) {
       </div>
       {step === 0 ? (
         <div className="space-y-3">
-          {["高考统招本科", "会计学 / 金融学 / 经济学", "目标：英国 / 香港 / 多国混申"].map((item) => (
+          {["高考统招本科", "会计学 / 金融学 / 经济学", "目标：英国 / 日本 / 韩国 / 澳大利亚"].map((item) => (
             <div key={item} className="flex items-center gap-2 rounded-2xl bg-slate-50 px-3 py-3 text-sm font-bold">
               <CheckCircle2 className="h-4 w-4 text-emerald-600" />
               {item}

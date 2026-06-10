@@ -85,4 +85,31 @@
     border-color: #b42318;
     background: #fff7f7;
   }
+
+  .region-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    border-radius: 1rem;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    padding: 0.7rem 0.6rem;
+    color: #183153;
+    font-size: 0.875rem;
+    font-weight: 900;
+    transition:
+      border-color 160ms ease,
+      background 160ms ease,
+      color 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .region-pill:hover,
+  .region-pill-selected {
+    border-color: #b42318;
+    background: #fff7f7;
+    color: #b42318;
+    box-shadow: 0 8px 20px rgba(180, 35, 24, 0.08);
+  }
 }
