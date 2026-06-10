@@ -1,9 +1,14 @@
 import type { ChangeEvent } from "react";
 import { Wand2 } from "lucide-react";
-import type { ApplicantProfile, Direction, Region } from "../types/application";
-
-const regions: Region[] = ["英国", "香港", "新加坡", "澳大利亚", "美国", "多国混申"];
-const directions: Direction[] = ["金融", "会计", "商业分析", "管理", "经济", "数据科学"];
+import {
+  budgetRanges,
+  cuebMajors,
+  internshipOptions,
+  languageExamOptions,
+  regions,
+  targetDirections
+} from "../data/formOptions";
+import type { ApplicantProfile } from "../types/application";
 
 interface ProfileFormProps {
   profile: ApplicantProfile;
@@ -12,8 +17,17 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ profile, onChange, onAnalyze }: ProfileFormProps) {
+  const [currentExam, currentScore = "暂无"] = profile.languageScore.includes(" ")
+    ? profile.languageScore.split(" ")
+    : [profile.languageScore.replace(/[0-9.].*$/, "") || "雅思", profile.languageScore.replace(/^[^\d暂无]+/, "") || "暂无"];
+  const selectedExam = languageExamOptions.find((item) => item.type === currentExam) ?? languageExamOptions[0];
+
   const update = (field: keyof ApplicantProfile, value: string | number) => {
     onChange({ ...profile, [field]: value });
+  };
+
+  const updateLanguage = (exam: string, score: string) => {
+    update("languageScore", score === "暂无" ? `${exam} 暂无` : `${exam} ${score}`);
   };
 
   const handleText =
@@ -32,7 +46,12 @@ export function ProfileForm({ profile, onChange, onAnalyze }: ProfileFormProps) 
       <div className="space-y-3">
         <label className="block">
           <span className="form-label">本科专业</span>
-          <input className="field" value={profile.major} onChange={handleText("major")} placeholder="会计学" />
+          <select className="field" value={profile.major} onChange={handleText("major")}>
+            {cuebMajors.map((major) => (
+              <option key={major}>{major}</option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs leading-5 text-slate-400">专业清单参考首经贸当前本科专业与招生专业，最终以学校当年招生计划为准。</p>
         </label>
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
@@ -49,13 +68,39 @@ export function ProfileForm({ profile, onChange, onAnalyze }: ProfileFormProps) 
           </label>
           <label className="block">
             <span className="form-label">预算</span>
-            <input className="field" value={profile.budget} onChange={handleText("budget")} placeholder="50-80万" />
+            <select className="field" value={profile.budget} onChange={handleText("budget")}>
+              {budgetRanges.map((range) => (
+                <option key={range}>{range}</option>
+              ))}
+            </select>
           </label>
         </div>
-        <label className="block">
-          <span className="form-label">语言成绩</span>
-          <input className="field" value={profile.languageScore} onChange={handleText("languageScore")} placeholder="雅思7.0" />
-        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block">
+            <span className="form-label">语言考试</span>
+            <select
+              className="field"
+              value={selectedExam.type}
+              onChange={(event) => updateLanguage(event.target.value, "暂无")}
+            >
+              {languageExamOptions.map((exam) => (
+                <option key={exam.type}>{exam.type}</option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="form-label">语言分数</span>
+            <select
+              className="field"
+              value={selectedExam.scores.includes(currentScore) ? currentScore : "暂无"}
+              onChange={(event) => updateLanguage(selectedExam.type, event.target.value)}
+            >
+              {selectedExam.scores.map((score) => (
+                <option key={score}>{score}</option>
+              ))}
+            </select>
+          </label>
+        </div>
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
             <span className="form-label">目标地区</span>
@@ -66,30 +111,30 @@ export function ProfileForm({ profile, onChange, onAnalyze }: ProfileFormProps) 
             </select>
           </label>
           <label className="block">
-            <span className="form-label">目标方向</span>
+            <span className="form-label">目标专业</span>
             <select className="field" value={profile.direction} onChange={handleText("direction")}>
-              {directions.map((item) => (
+              {targetDirections.map((item) => (
                 <option key={item}>{item}</option>
               ))}
             </select>
+            <p className="mt-1 text-xs leading-5 text-slate-400">数据不足，暂未呈现其他专业。</p>
           </label>
         </div>
         <label className="block">
           <span className="form-label">实习经历</span>
-          <textarea
-            className="field min-h-20 resize-y"
-            value={profile.internships}
-            onChange={handleText("internships")}
-            placeholder="四大、券商、银行、咨询、数据分析等"
-          />
+          <select className="field" value={profile.internships} onChange={handleText("internships")}>
+            {internshipOptions.map((option) => (
+              <option key={option}>{option}</option>
+            ))}
+          </select>
         </label>
         <label className="block">
-          <span className="form-label">科研 / 竞赛</span>
+          <span className="form-label">科研 / 学术成果</span>
           <textarea
             className="field min-h-20 resize-y"
             value={profile.research}
             onChange={handleText("research")}
-            placeholder="大创、商赛、课程论文、Python/SQL 项目"
+            placeholder="这里可自行填写：大创、论文、商赛、课程项目、Python/SQL作品、科研助理经历等"
           />
         </label>
       </div>

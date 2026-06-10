@@ -14,7 +14,7 @@ const initialProfile: ApplicantProfile = {
   languageScore: "雅思7.0",
   targetRegion: "英国",
   budget: "50-80万",
-  internships: "四大审计实习",
+  internships: "四大/会计师事务所实习",
   research: "课程论文、商赛经历",
   direction: "金融"
 };
