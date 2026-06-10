@@ -4,6 +4,7 @@ import type {
   OfferCase,
   SchoolRecommendation
 } from "../types/application";
+import { findSchoolInfo } from "../data/schoolDatabase";
 
 const gpaTier = (gpa: number) => {
   if (gpa >= 3.65) return "high";
@@ -90,7 +91,7 @@ const groupRecommendations = (
     .slice(0, 3);
 
   return ranked.map(({ item, score }) => ({
-    school: item.school,
+    school: findSchoolInfo(item.school),
     programs: [item.program],
     region: item.region,
     successRate: estimateRate(profile, item, score),
@@ -106,7 +107,7 @@ const missingMaterialsFor = (profile: ApplicantProfile) => {
     missing.push("补充雅思/托福/多邻国/PTE等标化成绩截图或考试计划");
   }
 
-  if (!profile.internships.trim() || profile.internships === "暂无相关实习") {
+  if (!profile.internships.trim() || /暂无|无/.test(profile.internships)) {
     missing.push("补充与目标专业相关的实习经历和职责成果");
   }
 

@@ -24,6 +24,7 @@
     "postcss": "latest",
     "autoprefixer": "latest",
     "vitest": "latest",
+    "@vercel/node": "latest",
     "@types/node": "latest",
     "@testing-library/react": "latest",
     "@testing-library/jest-dom": "latest",

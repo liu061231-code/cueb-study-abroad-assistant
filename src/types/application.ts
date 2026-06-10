@@ -31,6 +31,16 @@ export interface ApplicantProfile {
   direction: Direction;
 }
 
+export interface SchoolInfo {
+  id: string;
+  nameZh: string;
+  nameEn: string;
+  country: Region | string;
+  officialWebsite: string;
+  admissionsUrl?: string;
+  tags: string[];
+}
+
 export interface OfferCase {
   id: number;
   studentTag: string;
@@ -52,7 +62,7 @@ export interface OfferCase {
 }
 
 export interface SchoolRecommendation {
-  school: string;
+  school: SchoolInfo;
   programs: string[];
   region: string;
   successRate: number;

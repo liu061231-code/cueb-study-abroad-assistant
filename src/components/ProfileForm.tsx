@@ -3,7 +3,6 @@ import { Wand2 } from "lucide-react";
 import {
   budgetRanges,
   cuebMajors,
-  internshipOptions,
   languageExamOptions,
   regionOptions,
   targetDirections
@@ -143,11 +142,12 @@ export function ProfileForm({ profile, onChange, onAnalyze }: ProfileFormProps) 
         </div>
         <label className="block">
           <span className="form-label">实习经历</span>
-          <select className="field" value={profile.internships} onChange={handleText("internships")}>
-            {internshipOptions.map((option) => (
-              <option key={option}>{option}</option>
-            ))}
-          </select>
+          <textarea
+            className="field min-h-20 resize-y"
+            value={profile.internships}
+            onChange={handleText("internships")}
+            placeholder="这里可自行填写：四大、券商、银行、咨询、互联网、数据分析、校内实践等"
+          />
         </label>
         <label className="block">
           <span className="form-label">科研 / 学术成果</span>

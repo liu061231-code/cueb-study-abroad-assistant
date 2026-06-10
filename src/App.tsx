@@ -63,7 +63,7 @@ export default function App() {
               onChange={setProfile}
               onAnalyze={() => setAnalysisVersion((version) => version + 1)}
             />
-            <ResultPanel result={result} isEmpty={!hasGenerated} />
+            <ResultPanel profile={profile} result={result} cases={offerCases} isEmpty={!hasGenerated} />
           </section>
         </main>
       ) : null}

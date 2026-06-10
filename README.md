@@ -79,11 +79,44 @@ npm run build
 - 增加文书素材提纲、推荐信素材清单和申请进度看板。
 - 增加免责声明和人工顾问复核入口，避免把概率估计误解为录取承诺。
 
-## OpenAI API 接入位置
+## DeepSeek AI 接入方案
 
-- `src/lib/mockAi.ts`：把 mock 回复替换为后端接口，例如 `/api/ai-advice`。
-- 后端接口可以接收 `ApplicantProfile`、`AnalysisResult`、`matchedCases`，让模型生成更自然的解释、追问和文书建议。
-- 推荐保留 `src/lib/recommendation.ts` 的规则结果作为模型输入，避免完全依赖大模型做确定性选校。
+- 前端按钮位于推荐结果下方的“AI 留学分析助手”模块。
+- 前端请求路径：`/api/deepseek-analysis`。
+- 后端文件：`api/deepseek-analysis.ts`。
+- 后端从环境变量读取 `DEEPSEEK_API_KEY`，不会把 Key 暴露到浏览器端。
+- 模型：`deepseek-chat`。
+- 分析输入包含用户背景、当前冲刺/匹配/保底推荐结果、本地案例库数据。
+- AI 被约束为不得编造录取案例；如果案例库没有对应样本，需要明确提示“案例库暂无对应样本”。
+
+> 重要：GitHub Pages 只能托管静态文件，不能安全保存 `DEEPSEEK_API_KEY`，因此 DeepSeek 分析需要迁移到 Vercel / Netlify / Cloudflare Pages Functions 等支持 Serverless API 的平台。本项目已按 Vercel API Route 写好。
+
+## .env.local 示例
+
+```env
+DEEPSEEK_API_KEY=你的key
+```
+
+## 迁移到 Vercel 部署步骤
+
+1. 将当前 GitHub 仓库导入 Vercel。
+2. Framework Preset 选择 `Vite`。
+3. Build Command 使用 `pnpm build`。
+4. Output Directory 使用 `dist`。
+5. 在 Vercel 项目设置里添加环境变量：
+
+```text
+DEEPSEEK_API_KEY=你的 DeepSeek API Key
+```
+
+6. 重新部署。
+7. 部署完成后，前端点击“让 AI 深度分析”会请求：
+
+```text
+/api/deepseek-analysis
+```
+
+8. GitHub Pages 网址仍可作为静态演示，但 AI 分析按钮只有在 Vercel 部署后才能真正调用 DeepSeek。
 
 ## 真实录取案例 Excel 接入位置
 
