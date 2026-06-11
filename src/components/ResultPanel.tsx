@@ -9,6 +9,8 @@ interface ResultPanelProps {
   isEmpty: boolean;
 }
 
+const enableDeepSeek = import.meta.env.VITE_ENABLE_DEEPSEEK === "true";
+
 const groups = [
   { key: "stretchSchools", title: "冲刺", hint: "值得尝试，但需要材料突出", color: "text-cueb-red" },
   { key: "matchSchools", title: "匹配", hint: "背景相似度高，建议优先申请", color: "text-cueb-navy" },
@@ -17,7 +19,6 @@ const groups = [
 
 function SchoolCard({ item }: { item: SchoolRecommendation }) {
   const hasWebsite = Boolean(item.school.officialWebsite);
-  const linkUrl = item.school.admissionsUrl || item.school.officialWebsite;
 
   return (
     <article className="rounded-3xl border border-slate-200 bg-white p-4 shadow-line">
@@ -75,17 +76,79 @@ function collectRecommendedSchools(result: AnalysisResult) {
   };
 }
 
+function formatSchoolList(items: SchoolRecommendation[]) {
+  return items.map((item) => `${item.school.nameZh}（${item.successRate}%）`).join("、");
+}
+
+function createLocalAnalysis(profile: ApplicantProfile, result: AnalysisResult, cases: OfferCase[]) {
+  const caseLine =
+    cases.length > 0
+      ? `当前案例库已纳入 ${cases.length} 条本地样本，本次匹配到 ${result.matchedCases.length} 条相关案例。`
+      : "案例库暂无对应样本";
+
+  return [
+    "当前背景优势",
+    `- GPA ${profile.gpa}、语言成绩 ${profile.languageScore || "暂未填写"}，可作为初步筛选依据。`,
+    `- 目标地区为 ${profile.targetRegions.join("、")}，方向为 ${profile.direction}，系统已按地区和方向生成三档学校。`,
+    `- ${caseLine}`,
+    "",
+    "当前短板",
+    `- ${result.missingMaterials.length > 0 ? result.missingMaterials.join("；") : "暂未发现明显缺失项，但仍建议完善简历、文书和课程匹配说明。"}`,
+    "- 本地规则报告不等同于最终录取判断，需要结合项目官网要求和人工顾问复核。",
+    "",
+    "冲刺校风险",
+    `- 冲刺校包括：${formatSchoolList(result.stretchSchools)}。这些项目建议重点强化文书、实习含金量和课程匹配。`,
+    "",
+    "匹配校建议",
+    `- 匹配校包括：${formatSchoolList(result.matchSchools)}。建议作为主申请组合，优先确认项目先修课、语言小分和申请轮次。`,
+    "",
+    "保底校建议",
+    `- 保底校包括：${formatSchoolList(result.safetySchools)}。建议保留 2-3 个项目，用来控制整体申请风险。`,
+    "",
+    "申请材料提升方向",
+    "- 简历突出首经贸专业课程、量化成绩、实习产出和项目成果。",
+    "- 文书重点解释为什么选择该地区、该专业，以及本科背景如何支撑目标方向。",
+    "- 如果申请金融、商业分析或数据科学，建议补充 Python、SQL、统计或金融建模相关材料。",
+    "",
+    "时间规划",
+    ...result.timeline.map((item) => `- ${item}`)
+  ].join("\n");
+}
+
+async function parseAnalysisResponse(response: Response) {
+  const raw = await response.text();
+  let payload: { analysis?: string; error?: string } | null = null;
+
+  try {
+    payload = raw ? JSON.parse(raw) : null;
+  } catch {
+    const shortText = raw.slice(0, 160).replace(/\s+/g, " ");
+    throw new Error(`AI 服务返回了非 JSON 响应：${shortText || response.statusText}`);
+  }
+
+  if (!response.ok) {
+    throw new Error(payload?.error || `AI 服务请求失败：${response.status}`);
+  }
+
+  return payload?.analysis || "";
+}
+
 export function ResultPanel({ profile, result, cases, isEmpty }: ResultPanelProps) {
   const [analysis, setAnalysis] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const requestDeepSeekAnalysis = async () => {
+  const requestAnalysis = async () => {
     setLoading(true);
     setError("");
     setAnalysis("");
 
     try {
+      if (!enableDeepSeek) {
+        setAnalysis(createLocalAnalysis(profile, result, cases));
+        return;
+      }
+
       const response = await fetch("/api/deepseek-analysis", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -96,13 +159,7 @@ export function ResultPanel({ profile, result, cases, isEmpty }: ResultPanelProp
         })
       });
 
-      const payload = await response.json();
-
-      if (!response.ok) {
-        throw new Error(payload?.error || "AI 分析请求失败");
-      }
-
-      setAnalysis(payload.analysis || "");
+      setAnalysis(await parseAnalysisResponse(response));
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "AI 分析请求失败";
       setError(message);
@@ -162,19 +219,23 @@ export function ResultPanel({ profile, result, cases, isEmpty }: ResultPanelProp
       <div className="mt-5 rounded-[24px] border border-slate-200 bg-white p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="text-lg font-black text-cueb-navy">AI 留学分析助手</h3>
+            <h3 className="text-lg font-black text-cueb-navy">
+              {enableDeepSeek ? "DeepSeek 留学分析助手" : "本地选校分析报告"}
+            </h3>
             <p className="mt-1 text-xs leading-5 text-slate-500">
-              基于你的背景、当前推荐结果和本地案例库分析，不编造录取案例。
+              {enableDeepSeek
+                ? "基于你的背景、当前推荐结果和本地案例库分析，不编造录取案例。"
+                : "无 AI 静态版使用本地规则生成报告，不需要 API Key，也不依赖后端。"}
             </p>
           </div>
           <button
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cueb-navy px-4 py-3 text-sm font-black text-white transition hover:bg-cueb-red disabled:cursor-not-allowed disabled:opacity-60"
             type="button"
-            onClick={requestDeepSeekAnalysis}
+            onClick={requestAnalysis}
             disabled={loading}
           >
             <Sparkles className="h-4 w-4" />
-            {loading ? "分析中..." : "让 AI 深度分析"}
+            {loading ? "分析中..." : enableDeepSeek ? "让 DeepSeek 深度分析" : "生成本地分析报告"}
           </button>
         </div>
         {error ? (
@@ -188,8 +249,9 @@ export function ResultPanel({ profile, result, cases, isEmpty }: ResultPanelProp
           </div>
         ) : (
           <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-500">
-            当前 GitHub Pages 是静态托管，DeepSeek API Key 不能安全保存在这里。迁移到 Vercel 并配置
-            DEEPSEEK_API_KEY 后，此按钮会调用 /api/deepseek-analysis。
+            {enableDeepSeek
+              ? "Vercel 版会通过 /api/deepseek-analysis 调用 DeepSeek，API Key 只保存在后端环境变量中。"
+              : "当前是无 AI 静态版，点击按钮会用本地规则生成分析报告。"}
           </div>
         )}
       </div>

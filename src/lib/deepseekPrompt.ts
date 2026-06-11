@@ -67,10 +67,10 @@ export const getDeepSeekAnalysis = async (input: {
     })
   });
 
-  const payload = await response.json();
+  const payload = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(payload?.error?.message || "DeepSeek API 调用失败。");
+    throw new Error(payload?.error?.message || `DeepSeek API 调用失败：${response.status}`);
   }
 
   return payload?.choices?.[0]?.message?.content || "DeepSeek 暂未返回分析内容。";
